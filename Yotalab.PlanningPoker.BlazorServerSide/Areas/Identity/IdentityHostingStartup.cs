@@ -21,10 +21,22 @@ namespace Yotalab.PlanningPoker.BlazorServerSide.Areas.Identity
       {
         services.AddDbContext<ApplicationDbContext>(options =>
         {
-          options.UseMySql(context.Configuration.GetConnectionString("DefaultConnection"), dbOptions =>
+          var connectionString = context.Configuration.GetConnectionString("DefaultConnection");
+          var dataProviderInvariant = context.Configuration.GetSection("DataProviders")["DefaultConnection"];
+          switch (dataProviderInvariant)
           {
-            dbOptions.ServerVersion(new Version(10, 5, 8), ServerType.MariaDb);
-          });
+            case "MySql.Data.MySqlConnector":
+              options.UseMySql(connectionString, dbOptions =>
+              {
+                dbOptions.ServerVersion(new Version(10, 5, 8), ServerType.MariaDb);
+              });
+              break;
+            case "System.Data.SqlClient":
+              options.UseSqlServer(connectionString);
+              break;
+            default:
+              throw new Exception("Unknown data provider.");
+          }
         });
 
         services
