@@ -29,7 +29,7 @@ namespace Yotalab.PlanningPoker.Hosting
           builder.UseLocalhostClustering();
           builder.AddAdoNetGrainStorageAsDefault(options =>
           {
-            options.Invariant = "MySql.Data.MySqlConnector";
+            options.Invariant = context.Configuration.GetSection("DataProviders")["DefaultConnection"];
             options.ConnectionString = context.Configuration.GetConnectionString("DefaultConnection");
             options.UseJsonFormat = true;
             options.ConfigureJsonSerializerSettings = (jsonOptions) =>
@@ -40,7 +40,7 @@ namespace Yotalab.PlanningPoker.Hosting
           });
           builder.AddAdoNetGrainStorage("PubSubStore", options =>
           {
-            options.Invariant = "MySql.Data.MySqlConnector";
+            options.Invariant = context.Configuration.GetSection("DataProviders")["DefaultConnection"];
             options.ConnectionString = context.Configuration.GetConnectionString("DefaultConnection");
             options.UseJsonFormat = true;
           });
